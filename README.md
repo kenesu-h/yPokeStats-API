@@ -41,6 +41,14 @@ which json.lua happens to use because it uses Lua's built-in table library. As a
 band-aid solution, I had to modify json.lua to reference Lua's table library as
 "table\_lib".
 
+# Usage
+1. Clone the repo.
+2. Grab Kulchenko's compiled LuaSocket dll and put it in the root of the repo
+   (where ylingstats.lua is).
+3. With your Lua-compatible emulator, launch the script while running Pokemon.
+  - This step assumes that you've setup your emulator for Lua. This usually
+    entails lua51.dll being in the same folder as your emulator's executable.
+
 # Examples
 A working example of a web app communicating with the API can be found in
 `app-example`. It's very rough, but it's able to show a live preview of your
