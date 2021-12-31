@@ -1,70 +1,58 @@
-# yPokeStats
-## Unified Pokemon Stats & RNG tool
-yPokeStats is a LUA script that can display a lot of information about Pokemon games.
+# yPokeStats-API
+From yPokeStats: "yPokeStats is a LUA script that can display a lot of
+information about Pokemon games".
 
-### What it can display
-* IVs, EVs, Stats and Contest Stats
-* Nature
-* Hidden Power
-* Held Item
-* Pokerus Status
-* Frames Count (Emerald even displays frame count as reported by the game)
-* Friendship 
-* Ability
-* TID / SID
-* Moves and PP
-* Shiny check for Gen 1 & 2
+yPokeStats-API is meant to make this information available to applications 
+outside of Lua-compatible emulators. In the process, it also allows
+applications to automate emulator inputs in a more accessible way.
 
-### Supported games
-It natively supports all gen 1, 2, 3, 4 and 5 games:
-* Pokemon Red/Blue/Green (US, JAP, ES, IT, DE, FR)
-* Pokemon Yellow (US, JAP, ES, IT, DE, FR)
-* Pokemon Silver/Gold (US, JAP, ES, IT, DE, FR)
-* Pokemon Crystal (US, JAP, ES, IT, DE, FR)
-* Pokemon Ruby / Sapphire
-* Pokemon Emerald (and french hackrom Emeraude Plus)
-* Pokemon Fire Red / Leaf Green
-* Pokemon Diamond / Pearl
-* Pokemon Platinum
-* Pokemon Heart Gold / Soul Silver
-* Pokemon Black / White
-* Pokemon Black 2 / White 2
+# Why
+This is mainly a project for fun, but it was also developed with the intent of
+enabling the remote play of DS games - although mainly Pokemon games.
 
-![Red](/screens/1_red.png)
-![Silver More](/screens/2_silver_more.png)
-![Emerald Help Menu](/screens/3_emerald_help.png)
-![Emerald Enemy](/screens/3_emerald_fight.png)
-![Emerald Enemy More](/screens/3_emerald_fight_more.png)
-![Fire Red Enemy More](/screens/3_firered_fight_more.png)
-![Platinum Enemy More](/screens/4_platinum_fight_more.png)
-![Black Help Menu](/screens/5_black_help.png)
-![Black More](/screens/5_black_more.png)
+I also kinda wanted an excuse to practice React and web app development.
 
-### How does it work ?
-It fetches the GAME TITLE from the rom header to identify the current game. Then it reads and decrypts the data to be displayed by the script.
-It uses several data tables to convert numeric IDs (for Pokemon, Items, Abilities) to their actual name.
-The information about IDs and how pokemon data is stored and encrypted comes from several sources:
-* Gen 1 Data Structure : https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_data_structure_(Generation_I)
-* Gen 1 RAM map : http://datacrystal.romhacking.net/wiki/Pok%C3%A9mon_Red/Blue:RAM_map
-* Gen 2 Data Structure : https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_data_structure_(Generation_II)
-* Gen 2 RAM map : http://datacrystal.romhacking.net/wiki/Pok%C3%A9mon_Red/Blue:RAM_map
-* GBC cartridge header : https://gbdev.gg8.se/wiki/articles/The_Cartridge_Header
-* Gen 2 Ram Stucture : http://datacrystal.romhacking.net/wiki/Pok%C3%A9mon_Crystal:RAM_map
-* Gen 3 RNG & Data structure : https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_data_structure_(Generation_III)
-* Gen 4 RNG & Data structure : https://projectpokemon.org/home/docs/gen-4/pkm-structure-r65/
-* NDS format header : https://dsibrew.org/wiki/DSi_Cartridge_Header
-* Types colors : http://www.pokemonaaah.net/artsyfartsy/colordex/
-* Data for the data tables : https://bulbapedia.bulbagarden.net (various pages
+# How
+The API builds upon a modified yPokeStats by exposing the available data using a
+TCP stream. JSON is used in the rudimentary protocol developed for communication
+on this stream.
 
-To make this script, I started by reading other people's code. Here are the scripts I used :
-* Gen 3 : https://github.com/red-the-dev/gen3-pokemonstatsdisplay
-* Gen 4,5 : https://github.com/dude22072/PokeStats/blob/master/LUA%20scripts/
+First, I had to modify yPokeStats' data tables since it wouldn't recognize my
+Black and White 2 region. Its other scripts were reformatted too since the
+original formatting was... very rough, to say the least. I believe I edited one
+of the files to fix a crash, though I don't remember which file that was - the
+Git log will probably tell you. A lot of data is still missing - specifically
+for Gen 5 moves and abilities - but this fork of yPokeStats should still
+function like the original. Probably not for Gen 3 and prior though.
 
-### It doesn't work !
-First, be sure to have all files (ylingstats.lua and the data folder).
-Then if you do, please tell me which game and region you are using so that I can check and add it.
+TCP and raw socket capabilities were introduced by forcibly loading a
+[LuaSocket](https://github.com/diegonehab/luasocket) dll
+[compiled by Paul Kulchenko](https://github.com/pkulchenko/ZeroBraneStudio/issues/816),
+the main developer of ZeroBrane Studio. There's probably a simpler way to do
+this, but I was kinda frustrated by the fact that emulators dynamically loaded
+Lua, again through a dll - this meant to me that I had to load libraries by
+directly loading a Lua script or dll. LuaSocket had no Lua script, so I needed a
+dll that was compiled in a 64-bit environment. Luckily, Paul came in clutch.
 
-I hope you'll find my code cleaner, if not, please share your thoughts on how to improve.
+JSON was parsed and encoded using [json.lua](https://github.com/rxi/json.lua),
+which has a loadable Lua script. However, it had to be modified to account for
+the fact that yPokeStats stored Pokemon game data in a variable called "table",
+which json.lua happens to use because it uses Lua's built-in table library. As a
+band-aid solution, I had to modify json.lua to reference Lua's table library as
+"table\_lib".
 
-## TODO
-* Make a Python interpreter for 6th and 7th gens
+# Examples
+A working example of a web app communicating with the API can be found in
+`app-example`. It's very rough, but it's able to show a live preview of your
+current party. It also has some buttons for remote control. I honestly can't see
+myself finishing and polishing it. At minimum, it should be a basic example of
+what can be done using the API.
+
+The example uses Rust for the backend and TypeScript + React for the frontend,
+so you'll need to install Rust and Node.js respectively in order to run the
+whole web app. I'd write directions, but I'm currently pretty cooked.
+
+# Can I contribute and/or fork this?
+Yeah, of course. All of this work is unpolished, undocumented, and quite rushed
+compared to my usual projects anyway. I just hope this is a good enough
+foundation to build something major.

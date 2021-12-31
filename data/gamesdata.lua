@@ -113,6 +113,9 @@ games["POKEMON W"]["E"]={"Pokemon White (US)", 0x02234954, 0x0226AC94, 0xDC} -- 
 games["POKEMON W"]["J"]={"Pokemon White (JAP)", 0x02234954, 0x0226AC94, 0xDC} -- UNTESTED
 games["POKEMON W"]["F"]={"Pokemon White (PAL)", 0x02234954, 0x0226AC94, 0xDC} -- OK
 
+-- kenesu-h: I literally have no clue why my US ROM had "O" as the lang, but
+-- I'm shoving it here since it seems to have actually worked.
+games["POKEMON B2"]["O"]={"Pokemon Black 2 (US)", 0x0221E3EC, 0x02258834, 0xDC} -- UNTESTED
 games["POKEMON B2"]["E"]={"Pokemon Black 2 (US)", 0x0221E3EC, 0x02258834, 0xDC} -- UNTESTED
 games["POKEMON B2"]["J"]={"Pokemon Black 2 (JAP)", 0x0221E3EC, 0x02258834, 0xDC} -- UNTESTED
 games["POKEMON B2"]["F"]={"Pokemon Black 2 (PAL)", 0x0221E3EC, 0x02258834, 0xDC} -- OK
